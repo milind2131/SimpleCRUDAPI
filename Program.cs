@@ -1,8 +1,9 @@
+using Serilog;
+using SimpleCRUDAPI.Data;
 using SimpleCRUDAPI.Mapping;
 using SimpleCRUDAPI.Middleware;
 using SimpleCRUDAPI.Repository;
 using SimpleCRUDAPI.Services;
-using Serilog;
 
 
 
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 // Register Service
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
 
 var app = builder.Build();
