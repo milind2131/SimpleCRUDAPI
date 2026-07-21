@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.DTO_s;
+using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Model;
-using SimpleCRUDAPI.Services;
 
-namespace SimpleCRUDAPI.Controllers
+namespace SimpleCRUDAPI.Ecommerce.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -60,7 +60,7 @@ namespace SimpleCRUDAPI.Controllers
         {
             var result = await _productService.Delete(id);
 
-            if (!result)
+            if (!Convert.ToBoolean(result))
                 return NotFound();
 
             return Ok("Product Deleted Successfully");

@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace SimpleCRUDAPI.Data
+namespace SimpleCRUDAPI.Ecommerce.Infrastructure.Data
 {
     public class DbConnectionFactory : IDbConnectionFactory
     {

@@ -1,9 +1,10 @@
+using Ecommerce.Infrastructure.Repositories;
 using Serilog;
-using SimpleCRUDAPI.Data;
+using SimpleCRUDAPI.Ecommerce.API.Middleware;
+using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
+using SimpleCRUDAPI.Ecommerce.Application.Service;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Data;
 using SimpleCRUDAPI.Mapping;
-using SimpleCRUDAPI.Middleware;
-using SimpleCRUDAPI.Repository;
-using SimpleCRUDAPI.Services;
 
 
 

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace SimpleCRUDAPI.Middleware
+namespace SimpleCRUDAPI.Ecommerce.API.Middleware
 {
     public class ExceptionMiddleware
     {
@@ -28,7 +28,7 @@ namespace SimpleCRUDAPI.Middleware
 
                 var response = new
                 {
-                    StatusCode = context.Response.StatusCode,
+                    context.Response.StatusCode,
                     Message = "An unexpected error occurred. Please try again later."
                 };
                 

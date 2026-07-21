@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using SimpleCRUDAPI.DTO_s;
+using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Model;
-using SimpleCRUDAPI.Repository;
 
-namespace SimpleCRUDAPI.Services
+namespace SimpleCRUDAPI.Ecommerce.Application.Service
 {
     public class ProductService : IProductService
     {
@@ -43,7 +43,7 @@ namespace SimpleCRUDAPI.Services
         /* With using Automapper code */
         public async Task<List<ProductResponseDto>> GetAll()
         {
-            var products = await _productRepository.GetAll();
+            var products = await _productRepository.GetAllProductsAsync();
 
             return _mapper.Map<List<ProductResponseDto>>(products);
             //throw new Exception("This is a test exception from Service.");
@@ -51,7 +51,7 @@ namespace SimpleCRUDAPI.Services
 
         public async Task<ProductResponseDto?> GetById(int id)
         {
-            var product = await _productRepository.GetProductById(id);
+            var product = await _productRepository.GetProductByIdAsync(id);
 
             if (product == null)
                 return null;
@@ -63,7 +63,7 @@ namespace SimpleCRUDAPI.Services
         {
             var product = _mapper.Map<Product>(request);
 
-            var result = await _productRepository.AddProduct(product);
+            var result = await _productRepository.InsertProductAsync(product);
 
             return _mapper.Map<ProductResponseDto>(result);
         }
@@ -74,7 +74,7 @@ namespace SimpleCRUDAPI.Services
 
             product.Id = id;
 
-            var updated = await _productRepository.UpdateProduct(product);
+            var updated = await _productRepository.UpdateProductAsync(product);
 
             if (updated == null)
                 return null;
@@ -82,9 +82,9 @@ namespace SimpleCRUDAPI.Services
             return _mapper.Map<ProductResponseDto>(updated);
         }
 
-        public Task<bool> Delete(int id)
+        public  Task<int> Delete(int id)
         {
-            return _productRepository.DeleteProduct(id);
+            return   _productRepository.DeleteProductAsync(id);
         }
 
     }

@@ -1,7 +1,7 @@
 ﻿using SimpleCRUDAPI.DTO_s;
 using SimpleCRUDAPI.Model;
 
-namespace SimpleCRUDAPI.Services
+namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces
 {
     public interface IProductService
     {
@@ -16,6 +16,6 @@ namespace SimpleCRUDAPI.Services
 
         Task<ProductResponseDto?> Update(int id, ProductRequestDto request);
 
-        Task<bool> Delete(int id);
+        Task<int> Delete(int id);
     }
 }
