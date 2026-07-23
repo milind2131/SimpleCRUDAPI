@@ -38,13 +38,14 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        ProductId,
-        ProductName,
-        Price,
-        CategoryId,
-        IsActive,
-        CreatedDate
-    FROM Catalog.Products
+       p.ProductId as Id,
+        p.ProductName as Name,
+        p.Price,
+        c.CategoryId,
+        p.IsActive,
+        c.CreatedDate,
+		c.CategoryName as Category
+    FROM Catalog.Products p inner join Catalog.Categories c  on p.CategoryId=c.CategoryId
     WHERE IsActive = 1
     ORDER BY ProductName;
 

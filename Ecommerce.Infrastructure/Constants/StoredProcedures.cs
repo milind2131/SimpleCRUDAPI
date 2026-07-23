@@ -11,5 +11,11 @@
         public const string UpdateProduct = "Catalog.usp_UpdateProduct";
 
         public const string DeleteProduct = "Catalog.usp_DeleteProduct";
+
+        public const string CheckUserExistsByEmail = "Security.usp_CheckUserExistsByEmail";
+
+        public const string RegisterUser = "Security.usp_RegisterUser";
+
+        public const string GetUserByEmail = "Security.usp_GetUserByEmail";
     }
 }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Model;
 
 namespace SimpleCRUDAPI.Ecommerce.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
@@ -22,7 +24,7 @@ namespace SimpleCRUDAPI.Ecommerce.API.Controllers
              var products = await _productService.GetAll();
              return Ok(products);
 
-            throw new Exception("This is a test exception from Controller.");
+            //throw new Exception("This is a test exception from Controller.");
         }
 
         [HttpGet("{id}")]
