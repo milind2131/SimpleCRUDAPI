@@ -1,6 +1,9 @@
 using Serilog;
 using SimpleCRUDAPI.Ecommerce.API.Extensions;
 using SimpleCRUDAPI.Ecommerce.API.Middleware;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Configurations;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Services;
+using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -11,6 +14,13 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+
+
 
 // Add Services
 builder.Services.AddControllers();

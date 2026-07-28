@@ -46,6 +46,7 @@ namespace SimpleCRUDAPI.Ecommerce.Application.Service
             var products = await _productRepository.GetAllProductsAsync();
 
             return _mapper.Map<List<ProductResponseDto>>(products);
+            //throw new Exception("Testing database logging");
             //throw new Exception("This is a test exception from Service.");
         }
 
@@ -79,7 +80,9 @@ namespace SimpleCRUDAPI.Ecommerce.Application.Service
             if (updated == null)
                 return null;
 
-            return _mapper.Map<ProductResponseDto>(updated);
+            var updatedProduct = await _productRepository.GetProductByIdAsync(product.Id);
+
+            return _mapper.Map<ProductResponseDto>(updatedProduct);
         }
 
         public  Task<int> Delete(int id)

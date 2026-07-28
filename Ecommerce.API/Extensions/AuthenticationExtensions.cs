@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using SimpleCRUDAPI.Ecommerce.Infrastructure.Security;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Configurations;
 using System.Text;
+namespace SimpleCRUDAPI.Ecommerce.API.Extensions;
 
 public static class AuthenticationExtension
 {

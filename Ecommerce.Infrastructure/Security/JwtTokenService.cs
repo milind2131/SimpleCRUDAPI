@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Ecommerce.Domain.Entities;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Configurations;
 using SimpleCRUDAPI.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
-using SimpleCRUDAPI.Ecommerce.Infrastructure.Constants;
+using SimpleCRUDAPI.Ecommerce.Domain.Constants;
 using SimpleCRUDAPI.Ecommerce.Infrastructure.Data;
 using SimpleCRUDAPI.Model;
 using System.Data;
@@ -46,8 +46,8 @@ public class ProductRepository : IProductRepository
             StoredProcedures.InsertProduct,
             new
             {
-                product.Name,
-                product.Price,
+                ProductName= product.Name,
+                Price=product.Price,
                 product.Id
             },
             commandType: CommandType.StoredProcedure);
@@ -61,10 +61,9 @@ public class ProductRepository : IProductRepository
             StoredProcedures.UpdateProduct,
             new
             {
-                product.Id,
-                product.Name,
+                ProductId = product.Id,
+                ProductName = product.Name,
                 product.Price
-                //product.CategoryId
             },
             commandType: CommandType.StoredProcedure);
     }

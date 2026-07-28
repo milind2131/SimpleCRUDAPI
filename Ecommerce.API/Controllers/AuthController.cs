@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.API.DTOs.Auth;
+using ECommerce.Application.DTOs.Auth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.Ecommerce.Application.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Request;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace SimpleCRUDAPI.Controllers;
 
@@ -17,6 +20,25 @@ public class AuthController : ControllerBase
     public AuthController(IAuthService authService)
     {
         _authService = authService;
+    }
+
+
+    [HttpPost("verify-otp")]
+    public async Task<IActionResult> VerifyOtp(
+    VerifyOtpRequestDto request)
+    {
+        var response = await _authService.VerifyOtpAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpPost("resend-otp")]
+    public async Task<IActionResult> ResendOtp(
+    ResendOtpRequestDto request)
+    {
+        var response = await _authService.ResendOtpAsync(request);
+
+        return Ok(response);
     }
 
     [HttpPost("register")]
@@ -34,4 +56,39 @@ public class AuthController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequestDto request)
+    {
+        int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        ChangePasswordResponseDto response = await _authService.ChangePasswordAsync(userId, request);
+
+        if (response.IsSuccess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto request)
+    {
+        var response = await _authService.ForgotPasswordAsync(request);
+
+        return Ok(response);
+    }
+
+   
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto request)
+    {
+        var response = await _authService.ResetPasswordAsync(request);
+
+        return Ok(response);
+    }
+
+    
 }
