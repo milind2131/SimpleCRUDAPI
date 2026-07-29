@@ -25,4 +25,8 @@
     <Folder Include="Ecommerce.Shared\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Database\ECommerce.Database.sqlproj" />
+  </ItemGroup>
+
 </Project>
