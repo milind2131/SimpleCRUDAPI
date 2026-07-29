@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
-using SimpleCRUDAPI.Model;
 
 namespace SimpleCRUDAPI.Ecommerce.API.Controllers
 {
@@ -38,6 +37,7 @@ namespace SimpleCRUDAPI.Ecommerce.API.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = "Admin,Seller")]
         [HttpPost]
         public async Task<IActionResult> Add(ProductRequestDto request)
         {
@@ -46,6 +46,8 @@ namespace SimpleCRUDAPI.Ecommerce.API.Controllers
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Admin,Seller")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ProductRequestDto request)
         {
@@ -57,6 +59,7 @@ namespace SimpleCRUDAPI.Ecommerce.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
