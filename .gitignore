@@ -11,3 +11,6 @@ obj/
 
 # Logs
 Logs/
+
+# SQL Database Project cache
+*.jfm
