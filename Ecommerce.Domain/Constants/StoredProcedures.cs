@@ -46,6 +46,15 @@
 
         public const string UpdatePasswordResetOtp = "Security.usp_UpdatePasswordResetOtp";
 
+        // Refresh Token
+        public const string SaveRefreshToken = "Security.usp_SaveRefreshToken";
+
+        public const string GetRefreshToken = "Security.usp_GetRefreshToken";
+
+        public const string RevokeRefreshToken = "Security.usp_RevokeRefreshToken";
+
+        public const string RevokeAllRefreshTokensByUserId = "Security.usp_RevokeAllRefreshTokensByUserId";
+
 
 
     }

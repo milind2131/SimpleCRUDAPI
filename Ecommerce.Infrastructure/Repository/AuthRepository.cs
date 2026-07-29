@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ECommerce.Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
@@ -7,6 +8,7 @@ using SimpleCRUDAPI.Ecommerce.Domain.Entities;
 using SimpleCRUDAPI.Ecommerce.Infrastructure.Data;
 using SimpleCRUDAPI.Model;
 using System.Data;
+using System.Data.Common;
 
 namespace Ecommerce.Infrastructure.Repositories;
 
@@ -229,5 +231,62 @@ public class AuthRepository : IAuthRepository
             commandType: CommandType.StoredProcedure);
     }
 
-   
+    // AuthRepository.cs
+
+    public async Task SaveRefreshTokenAsync(RefreshToken refreshToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@UserId", refreshToken.UserId);
+        parameters.Add("@RefreshToken", refreshToken.Token);
+        parameters.Add("@ExpiryDate", refreshToken.ExpiryDate);
+        parameters.Add("@CreatedByIp", refreshToken.CreatedByIp);
+
+        await connection.ExecuteAsync(
+            StoredProcedures.SaveRefreshToken,
+            parameters,
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<RefreshToken?> GetRefreshTokenAsync(string refreshToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@RefreshToken", refreshToken);
+
+        return await connection.QueryFirstOrDefaultAsync<RefreshToken>(
+            StoredProcedures.GetRefreshToken,
+            parameters,
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task RevokeRefreshTokenAsync(string refreshToken, string? replacedByToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@RefreshToken", refreshToken);
+        parameters.Add("@ReplacedByToken", replacedByToken);
+
+        await connection.ExecuteAsync(
+            StoredProcedures.RevokeRefreshToken,
+            parameters,
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task RevokeAllRefreshTokensByUserIdAsync(int userId)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@UserId", userId);
+
+        await connection.ExecuteAsync(
+            StoredProcedures.RevokeAllRefreshTokensByUserId,
+            parameters,
+            commandType: CommandType.StoredProcedure);
+    }
+
 }

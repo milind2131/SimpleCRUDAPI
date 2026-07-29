@@ -3,6 +3,7 @@ using ECommerce.Application.DTOs.Auth;
 using SimpleCRUDAPI.Ecommerce.Application.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Request;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Response;
+using SimpleCRUDAPI.ECommerce.Application.DTOs;
 
 namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 
@@ -16,5 +17,8 @@ public interface IAuthService
     Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request);
     Task<VerifyOtpResponseDto> VerifyOtpAsync(VerifyOtpRequestDto request);
     Task<ResendOtpResponseDto> ResendOtpAsync(ResendOtpRequestDto request);
+    Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
 
+    Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto request);
+    Task<LogoutAllDevicesResponseDto> LogoutFromAllDevicesAsync(int userId);
 }

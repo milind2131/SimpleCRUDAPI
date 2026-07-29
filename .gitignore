@@ -14,3 +14,10 @@ Logs/
 
 # SQL Database Project cache
 *.jfm
+
+# SQL Database Project
+*.jfm
+Import Schema Logs/
+*.log
+*.dbmdl
+*.dbproj.schemaview

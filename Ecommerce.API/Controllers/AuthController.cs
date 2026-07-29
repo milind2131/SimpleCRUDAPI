@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.Ecommerce.Application.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Request;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
+using SimpleCRUDAPI.ECommerce.Application.DTOs;
 using System.Security.Claims;
 
 namespace SimpleCRUDAPI.Controllers;
@@ -90,5 +91,30 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+    {
+        var response = await _authService.RefreshTokenAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
+    {
+        var response = await _authService.LogoutAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpPost("logout-all")]
+    public async Task<IActionResult> LogoutFromAllDevices()
+    {
+        var userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        var response = await _authService.LogoutFromAllDevicesAsync(userId);
+
+        return Ok(response);
+    }
+
 }

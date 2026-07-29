@@ -2,12 +2,14 @@
 using ECommerce.API.DTOs.Auth;
 using ECommerce.Application.DTOs.Auth;
 using ECommerce.Application.Enums;
+using ECommerce.Domain.Entities;
 using SimpleCRUDAPI.Ecommerce.Application.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Request;
 using SimpleCRUDAPI.Ecommerce.Application.DTOs.Response;
 using SimpleCRUDAPI.Ecommerce.Application.Exceptions;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Ecommerce.Domain.Entities;
+using SimpleCRUDAPI.ECommerce.Application.DTOs;
 using SimpleCRUDAPI.Model;
 
 namespace SimpleCRUDAPI.Ecommerce.Application.Services;
@@ -74,21 +76,29 @@ public class AuthService : IAuthService
             Message = "OTP has been sent successfully to your registered email."
         };
     }
-     
+
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
         var user = await _authRepository.GetUserByEmailAsync(request.Email);
 
         if (user == null)
-            throw new InvalidCredentialsException();       // Fluent validation with customize response structure.
-        //throw new Exception("Invalid Email or Password.");
+            throw new InvalidCredentialsException();
 
         var isValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
 
         if (!isValid)
-            throw new Exception("Invalid Email or Password.");
+            throw new InvalidCredentialsException();
 
         var jwt = _jwtTokenService.GenerateToken(user);
+
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        await _authRepository.SaveRefreshTokenAsync(new RefreshToken
+        {
+            UserId = user.UserId,
+            Token = refreshToken,
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
+        });
 
         return new LoginResponseDto
         {
@@ -97,6 +107,7 @@ public class AuthService : IAuthService
             LastName = user.LastName,
             Email = user.Email,
             Token = jwt.Token,
+            RefreshToken = refreshToken,
             Expiration = jwt.Expiration
         };
     }
@@ -358,4 +369,84 @@ public class AuthService : IAuthService
             Message = "OTP has been sent successfully."
         };
     }
+    public async Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request)
+    {
+        var existingToken = await _authRepository.GetRefreshTokenAsync(request.RefreshToken);
+
+        if (existingToken == null)
+            throw new UnauthorizedAccessException("Invalid refresh token.");
+
+        if (existingToken.IsRevoked)
+            throw new UnauthorizedAccessException("Refresh token has been revoked.");
+
+        if (existingToken.ExpiryDate <= DateTime.UtcNow)
+            throw new UnauthorizedAccessException("Refresh token has expired.");
+
+        var user = await _authRepository.GetUserByIdAsync(existingToken.UserId);
+
+        if (user == null)
+            throw new UnauthorizedAccessException("User not found.");
+
+        // Generate new Access Token
+        var jwt = _jwtTokenService.GenerateToken(user);
+
+        // Generate new Refresh Token
+        var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        // Revoke old Refresh Token
+        await _authRepository.RevokeRefreshTokenAsync(
+            request.RefreshToken,
+            newRefreshToken);
+
+        // Save new Refresh Token
+        await _authRepository.SaveRefreshTokenAsync(new RefreshToken
+        {
+            UserId = user.UserId,
+            Token = newRefreshToken,
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
+        });
+
+        // Return new tokens
+        return new RefreshTokenResponseDto
+        {
+            AccessToken = jwt.Token,
+            RefreshToken = newRefreshToken
+        };
+    }
+    public async Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto request)
+    {
+        var refreshToken = await _authRepository.GetRefreshTokenAsync(request.RefreshToken);
+
+        if (refreshToken == null)
+            throw new UnauthorizedAccessException("Invalid refresh token.");
+
+        if (refreshToken.IsRevoked)
+            throw new UnauthorizedAccessException("User is already logged out.");
+
+        await _authRepository.RevokeRefreshTokenAsync(
+            request.RefreshToken,
+            null);
+
+        return new LogoutResponseDto
+        {
+            Message = "Logout successful."
+        };
+    }
+
+    public async Task<LogoutAllDevicesResponseDto> LogoutFromAllDevicesAsync(int userId)
+    {
+        var user = await _authRepository.GetUserByIdAsync(userId);
+
+        if (user == null)
+            throw new UnauthorizedAccessException("User not found.");
+
+        await _authRepository.RevokeAllRefreshTokensByUserIdAsync(userId);
+
+        return new LogoutAllDevicesResponseDto
+        {
+            Message = "Logged out from all devices successfully."
+        };
+    }
+
+
 }

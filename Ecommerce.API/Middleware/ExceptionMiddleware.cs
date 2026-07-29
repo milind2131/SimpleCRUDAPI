@@ -103,7 +103,7 @@ public class ExceptionMiddleware
             await context.Response.WriteAsJsonAsync(new
             {
                 StatusCode = 500,
-                Message = "An unexpected error occurred. Please try again later."
+                Message = ex.Message
             });
         }
     }
