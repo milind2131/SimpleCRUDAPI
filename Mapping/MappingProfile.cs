@@ -8,9 +8,7 @@ namespace SimpleCRUDAPI.Mapping
     {
         public MappingProfile() 
         {
-            CreateMap<Product,ProductRequestDto>();
             CreateMap<Product,ProductResponseDto>();
-            CreateMap<ProductRequestDto,Product >();
             CreateMap<ProductRequestDto,Product>();
             
         }

@@ -48,7 +48,7 @@ public class ProductRepository : IProductRepository
             {
                 ProductName= product.Name,
                 Price=product.Price,
-                product.Id
+                CategoryId = product.CategoryId
             },
             commandType: CommandType.StoredProcedure);
     }

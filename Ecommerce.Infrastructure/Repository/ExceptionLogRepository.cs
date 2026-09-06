@@ -18,20 +18,64 @@ public class ExceptionLogRepository : IExceptionLogRepository
 
     public async Task LogExceptionAsync(ApplicationLog log)
     {
-        using IDbConnection connection = _connectionFactory.CreateConnection();
+        using IDbConnection connection =
+            _connectionFactory.CreateConnection();
 
         var parameters = new DynamicParameters();
 
         parameters.Add("@LogLevel", log.LogLevel);
+
         parameters.Add("@Message", log.Message);
-        parameters.Add("@ExceptionMessage", log.ExceptionMessage);
-        parameters.Add("@StackTrace", log.StackTrace);
-        parameters.Add("@Source", log.Source);
-        parameters.Add("@MethodName", log.MethodName);
-        parameters.Add("@RequestPath", log.RequestPath);
-        parameters.Add("@UserId", log.UserId);
-        parameters.Add("@IpAddress", log.IpAddress);
-        parameters.Add("@MachineName", log.MachineName);
+
+        parameters.Add("@ExceptionType",log.ExceptionType);
+
+        parameters.Add(
+            "@ExceptionMessage",
+            log.ExceptionMessage);
+
+        parameters.Add(
+            "@StackTrace",
+            log.StackTrace);
+
+        parameters.Add(
+            "@Source",
+            log.Source);
+
+        parameters.Add(
+            "@FileName",
+            log.FileName);
+
+        parameters.Add(
+            "@LineNumber",
+            log.LineNumber);
+
+        parameters.Add(
+            "@MethodName",
+            log.MethodName);
+
+        parameters.Add(
+            "@RequestMethod",
+            log.RequestMethod);
+
+        parameters.Add(
+            "@RequestPath",
+            log.RequestPath);
+
+        parameters.Add(
+            "@TraceId",
+            log.TraceId);
+
+        parameters.Add(
+            "@UserId",
+            log.UserId);
+
+        parameters.Add(
+            "@IpAddress",
+            log.IpAddress);
+
+        parameters.Add(
+            "@MachineName",
+            log.MachineName);
 
         await connection.ExecuteAsync(
             StoredProcedures.InsertExceptionLog,

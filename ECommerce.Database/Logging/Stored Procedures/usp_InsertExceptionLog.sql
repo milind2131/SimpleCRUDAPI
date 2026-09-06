@@ -1,15 +1,20 @@
-﻿CREATE   PROCEDURE Logging.usp_InsertExceptionLog
+﻿CREATE PROCEDURE Logging.usp_InsertExceptionLog
 (
-      @LogLevel          NVARCHAR(20)
-    , @Message           NVARCHAR(1000)
-    , @ExceptionMessage  NVARCHAR(MAX) = NULL
-    , @StackTrace        NVARCHAR(MAX) = NULL
-    , @Source            NVARCHAR(300) = NULL
-    , @MethodName        NVARCHAR(200) = NULL
-    , @RequestPath       NVARCHAR(500) = NULL
-    , @UserId            INT = NULL
-    , @IpAddress         NVARCHAR(50) = NULL
-    , @MachineName       NVARCHAR(200) = NULL
+      @LogLevel NVARCHAR(20)
+    , @Message NVARCHAR(MAX)
+    , @ExceptionType NVARCHAR(500) = NULL
+    , @ExceptionMessage NVARCHAR(MAX) = NULL
+    , @StackTrace NVARCHAR(MAX) = NULL
+    , @Source NVARCHAR(300) = NULL
+    , @FileName NVARCHAR(500) = NULL
+    , @LineNumber INT = NULL
+    , @MethodName NVARCHAR(500) = NULL
+    , @RequestMethod NVARCHAR(20) = NULL
+    , @RequestPath NVARCHAR(500) = NULL
+    , @TraceId NVARCHAR(100) = NULL
+    , @UserId INT = NULL
+    , @IpAddress NVARCHAR(50) = NULL
+    , @MachineName NVARCHAR(200) = NULL
 )
 AS
 BEGIN
@@ -20,11 +25,16 @@ BEGIN
     (
           LogLevel
         , Message
+        , ExceptionType
         , ExceptionMessage
         , StackTrace
         , Source
+        , FileName
+        , LineNumber
         , MethodName
+        , RequestMethod
         , RequestPath
+        , TraceId
         , UserId
         , IpAddress
         , MachineName
@@ -33,11 +43,16 @@ BEGIN
     (
           @LogLevel
         , @Message
+        , @ExceptionType
         , @ExceptionMessage
         , @StackTrace
         , @Source
+        , @FileName
+        , @LineNumber
         , @MethodName
+        , @RequestMethod
         , @RequestPath
+        , @TraceId
         , @UserId
         , @IpAddress
         , @MachineName

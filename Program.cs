@@ -6,53 +6,99 @@ using SimpleCRUDAPI.Ecommerce.Infrastructure.Services;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
     .WriteTo.Console()
     .WriteTo.File(
-        "Logs/log-.txt",
+        "Logs/bootstrap-.txt",
         rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+    .CreateBootstrapLogger();
 
 
 
-
-// Add Services
-builder.Services.AddControllers();
-
-builder.Services.AddApplicationServices();
-
-builder.Services.AddJwtAuthentication(builder.Configuration);
-
-builder.Services.AddSwaggerDocumentation();
-
-var app = builder.Build();
-
-// Logging
-app.Logger.LogInformation("Application Started");
-app.Logger.LogWarning("Warning Test");
-app.Logger.LogError("Error Test");
-
-// Configure Middleware
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    Log.Information("Starting SimpleCRUDAPI");
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Connect ASP.NET Core ILogger<T> with Serilog
+    builder.Services.AddSerilog((services, loggerConfiguration) =>
+        loggerConfiguration
+            .ReadFrom.Configuration(builder.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext());
+
+    builder.Services.Configure<EmailSettings>(
+        builder.Configuration.GetSection("EmailSettings"));
+
+    builder.Services.AddControllers();
+
+    builder.Services.AddApplicationServices();
+
+    builder.Services.AddJwtAuthentication(
+        builder.Configuration);
+
+    builder.Services.AddSwaggerDocumentation();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("ReactApp", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
+
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    // Keep this BEFORE ExceptionMiddleware
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.EnrichDiagnosticContext =
+            (diagnosticContext, httpContext) =>
+            {
+                diagnosticContext.Set(
+                    "TraceId",
+                    httpContext.TraceIdentifier);
+
+                diagnosticContext.Set(
+                    "ClientIP",
+                    httpContext.Connection
+                        .RemoteIpAddress?
+                        .ToString());
+            };
+    });
+
+    app.UseMiddleware<ExceptionMiddleware>();
+
+    app.UseHttpsRedirection();
+
+    app.UseCors("ReactApp");
+
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    Log.Information("SimpleCRUDAPI started successfully");
+
+    app.Run();
 }
-
-app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(
+        ex,
+        "SimpleCRUDAPI terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

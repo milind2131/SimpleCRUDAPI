@@ -64,9 +64,17 @@ namespace SimpleCRUDAPI.Ecommerce.Application.Service
         {
             var product = _mapper.Map<Product>(request);
 
-            var result = await _productRepository.InsertProductAsync(product);
+            var productId =
+       await _productRepository.InsertProductAsync(product);
 
-            return _mapper.Map<ProductResponseDto>(result);
+            var createdProduct =
+                await _productRepository.GetProductByIdAsync(productId);
+
+            if (createdProduct == null)
+                throw new InvalidOperationException(
+                    "Product was created but could not be retrieved.");
+
+            return _mapper.Map<ProductResponseDto>(createdProduct);
         }
 
         public async Task<ProductResponseDto?> Update(int id, ProductRequestDto request)

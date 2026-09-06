@@ -70,5 +70,13 @@ namespace SimpleCRUDAPI.Ecommerce.API.Controllers
 
             return Ok("Product Deleted Successfully");
         }
+
+        [AllowAnonymous]
+        [HttpGet("test-exception")]
+        public IActionResult TestException()
+        {
+            throw new InvalidOperationException(
+                "This is a test exception for logging verification.");
+        }
     }
 }
