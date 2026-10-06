@@ -1,21 +1,43 @@
 ﻿using SimpleCRUDAPI.DTO_s;
-using SimpleCRUDAPI.Model;
 
-namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces
+namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces;
+
+public interface IProductService
 {
-    public interface IProductService
-    {
-       
-       
+    Task<IEnumerable<ProductResponseDto>>
+        GetAllProductsAsync();
 
-        Task<List<ProductResponseDto>> GetAll();
+    Task<ProductResponseDto?>
+        GetProductByIdAsync(int productId);
 
-        Task<ProductResponseDto?> GetById(int id);
+    Task<IEnumerable<ProductResponseDto>>
+        GetMyProductsAsync(int userId);
 
-        Task<ProductResponseDto> Add(ProductRequestDto request);
+    Task<ProductResponseDto?>
+        AddProductAsync(
+            ProductRequestDto request,
+            int ownerUserId);
 
-        Task<ProductResponseDto?> Update(int id, ProductRequestDto request);
+    Task<bool>
+        UpdateProductAsync(
+            int productId,
+            ProductRequestDto request,
+            int currentUserId,
+            bool isSuperAdmin);
 
-        Task<int> Delete(int id);
-    }
+    Task<bool>
+        UpdateProductImageAsync(
+            int productId,
+            string imageUrl,
+            int currentUserId,
+            bool isSuperAdmin);
+
+    Task<bool>
+        CanModifyProductAsync(
+            int productId,
+            int currentUserId,
+            bool isSuperAdmin);
+
+    Task<bool>
+        DeleteProductAsync(int productId);
 }

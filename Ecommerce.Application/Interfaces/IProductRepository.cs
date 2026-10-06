@@ -1,17 +1,30 @@
 ﻿using SimpleCRUDAPI.Model;
 
-namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces
+namespace SimpleCRUDAPI.Ecommerce.Application.Interfaces;
+
+public interface IProductRepository
 {
-    public interface IProductRepository
-    {
-        Task<IEnumerable<Product>> GetAllProductsAsync();
+    Task<IEnumerable<Product>> GetAllAsync();
 
-        Task<Product?> GetProductByIdAsync(int productId);
+    Task<Product?> GetByIdAsync(int productId);
 
-        Task<int> InsertProductAsync(Product product);
+    Task<IEnumerable<Product>> GetByOwnerAsync(
+        int ownerUserId);
 
-        Task<int> UpdateProductAsync(Product product);
+    Task<int> AddAsync(
+        Product product,
+        int ownerUserId);
 
-        Task<int> DeleteProductAsync(int productId);
-    }
+    Task<int> UpdateAsync(
+        Product product,
+        int currentUserId,
+        bool isSuperAdmin);
+
+    Task<int> UpdateProductImageAsync(
+        int productId,
+        string imageUrl,
+        int currentUserId,
+        bool isSuperAdmin);
+
+    Task<int> DeleteAsync(int productId);
 }

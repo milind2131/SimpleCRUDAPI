@@ -15,6 +15,9 @@ Logs/
 # SQL Database Project cache
 *.jfm
 
+# Runtime uploaded files
+wwwroot/uploads/
+
 # SQL Database Project
 *.jfm
 Import Schema Logs/

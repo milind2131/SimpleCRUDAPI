@@ -2,81 +2,345 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
+using System.Security.Claims;
 
-namespace SimpleCRUDAPI.Ecommerce.API.Controllers
+namespace SimpleCRUDAPI.Ecommerce.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class ProductController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    private readonly IProductService _productService;
+    private readonly IWebHostEnvironment _environment;
+
+    public ProductController(
+        IProductService productService,
+        IWebHostEnvironment environment)
     {
-        private readonly IProductService _productService;
+        _productService = productService;
+        _environment = environment;
+    }
 
-        public ProductController(IProductService productService)
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var products =
+            await _productService.GetAllProductsAsync();
+
+        return Ok(products);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(
+        int id)
+    {
+        var product =
+            await _productService.GetProductByIdAsync(
+                id);
+
+        if (product == null)
         {
-            _productService = productService;
+            return NotFound(new
+            {
+                message = "Product not found."
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-             var products = await _productService.GetAll();
-             return Ok(products);
+        return Ok(product);
+    }
 
-            //throw new Exception("This is a test exception from Controller.");
+    [Authorize(
+        Roles = "Seller,Admin,SuperAdmin")]
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMyProducts()
+    {
+        var userId =
+            GetCurrentUserId();
+
+        var products =
+            await _productService.GetMyProductsAsync(
+                userId);
+
+        return Ok(products);
+    }
+
+    [Authorize(
+        Roles = "Seller,Admin,SuperAdmin")]
+    [HttpPost]
+    public async Task<IActionResult> Add(
+        ProductRequestDto request)
+    {
+        var userId =
+            GetCurrentUserId();
+
+        var product =
+            await _productService.AddProductAsync(
+                request,
+                userId);
+
+        if (product == null)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Unable to create product."
+            });
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        return CreatedAtAction(
+            nameof(GetById),
+            new
+            {
+                id = product.Id
+            },
+            product);
+    }
+
+    [Authorize(
+        Roles = "Seller,Admin,SuperAdmin")]
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+        int id,
+        ProductRequestDto request)
+    {
+        var currentUserId =
+            GetCurrentUserId();
+
+        var isSuperAdmin =
+            User.IsInRole("SuperAdmin");
+
+        var canModify =
+            await _productService
+                .CanModifyProductAsync(
+                    id,
+                    currentUserId,
+                    isSuperAdmin);
+
+        if (!canModify)
         {
-            var product = await _productService.GetById(id);
-
-            if (product == null)
-                return NotFound();
-
-            return Ok(product);
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                new
+                {
+                    message =
+                        "You can update only products created by you."
+                });
         }
 
-        [Authorize(Roles = "Admin,Seller")]
-        [HttpPost]
-        public async Task<IActionResult> Add(ProductRequestDto request)
-        {
-            var result = await _productService.Add(request);
+        var updated =
+            await _productService.UpdateProductAsync(
+                id,
+                request,
+                currentUserId,
+                isSuperAdmin);
 
-            return Ok(result);
+        if (!updated)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Unable to update product."
+            });
         }
 
-
-        [Authorize(Roles = "Admin,Seller")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ProductRequestDto request)
+        return Ok(new
         {
-            var result = await _productService.Update(id, request);
+            message =
+                "Product updated successfully."
+        });
+    }
 
-            if (result == null)
-                return NotFound();
+    [Authorize(Roles = "SuperAdmin")]
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+        int id)
+    {
+        var deleted =
+            await _productService.DeleteProductAsync(
+                id);
 
-            return Ok(result);
+        if (!deleted)
+        {
+            return NotFound(new
+            {
+                message =
+                    "Product not found."
+            });
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        return Ok(new
         {
-            var result = await _productService.Delete(id);
+            message =
+                "Product deleted successfully."
+        });
+    }
 
-            if (!Convert.ToBoolean(result))
-                return NotFound();
+    [Authorize(
+        Roles = "Seller,Admin,SuperAdmin")]
+    [HttpPost("{id:int}/image")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadImage(
+        int id,
+        IFormFile image)
+    {
+        var currentUserId =
+            GetCurrentUserId();
 
-            return Ok("Product Deleted Successfully");
+        var isSuperAdmin =
+            User.IsInRole("SuperAdmin");
+
+        var canModify =
+            await _productService
+                .CanModifyProductAsync(
+                    id,
+                    currentUserId,
+                    isSuperAdmin);
+
+        if (!canModify)
+        {
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                new
+                {
+                    message =
+                        "You can update only images of products created by you."
+                });
         }
 
-        [AllowAnonymous]
-        [HttpGet("test-exception")]
-        public IActionResult TestException()
+        if (image == null ||
+            image.Length == 0)
         {
-            throw new InvalidOperationException(
-                "This is a test exception for logging verification.");
+            return BadRequest(new
+            {
+                message =
+                    "Please select an image."
+            });
         }
+
+        var allowedExtensions =
+            new[]
+            {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".webp"
+            };
+
+        var extension =
+            Path.GetExtension(
+                image.FileName)
+            .ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(
+                extension))
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Only JPG, JPEG, PNG and WEBP images are allowed."
+            });
+        }
+
+        const long maxFileSize =
+            5 * 1024 * 1024;
+
+        if (image.Length > maxFileSize)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Image size cannot exceed 5 MB."
+            });
+        }
+
+        var webRootPath =
+            _environment.WebRootPath;
+
+        if (string.IsNullOrWhiteSpace(
+                webRootPath))
+        {
+            webRootPath =
+                Path.Combine(
+                    _environment.ContentRootPath,
+                    "wwwroot");
+        }
+
+        var folderPath =
+            Path.Combine(
+                webRootPath,
+                "uploads",
+                "products");
+
+        Directory.CreateDirectory(
+            folderPath);
+
+        var fileName =
+            $"{Guid.NewGuid()}{extension}";
+
+        var filePath =
+            Path.Combine(
+                folderPath,
+                fileName);
+
+        await using (
+            var stream =
+                new FileStream(
+                    filePath,
+                    FileMode.Create))
+        {
+            await image.CopyToAsync(
+                stream);
+        }
+
+        var imageUrl =
+            $"/uploads/products/{fileName}";
+
+        var updated =
+            await _productService
+                .UpdateProductImageAsync(
+                    id,
+                    imageUrl,
+                    currentUserId,
+                    isSuperAdmin);
+
+        if (!updated)
+        {
+            if (System.IO.File.Exists(
+                    filePath))
+            {
+                System.IO.File.Delete(
+                    filePath);
+            }
+
+            return BadRequest(new
+            {
+                message =
+                    "Unable to update product image."
+            });
+        }
+
+        return Ok(new
+        {
+            imageUrl
+        });
+    }
+
+    private int GetCurrentUserId()
+    {
+        var userIdValue =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier)
+            ?.Value;
+
+        if (!int.TryParse(
+                userIdValue,
+                out var userId))
+        {
+            throw new UnauthorizedAccessException(
+                "User identifier is missing from token.");
+        }
+
+        return userId;
     }
 }

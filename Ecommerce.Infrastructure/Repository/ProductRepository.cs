@@ -5,32 +5,36 @@ using SimpleCRUDAPI.Ecommerce.Infrastructure.Data;
 using SimpleCRUDAPI.Model;
 using System.Data;
 
-namespace Ecommerce.Infrastructure.Repositories;
+namespace SimpleCRUDAPI.Ecommerce.Infrastructure.Repository;
 
 public class ProductRepository : IProductRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
-    public ProductRepository(IDbConnectionFactory connectionFactory)
+    public ProductRepository(
+        IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductsAsync()
+    public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection =
+            _connectionFactory.CreateConnection();
 
         return await connection.QueryAsync<Product>(
-            StoredProcedures.GetAllProducts,
+            ProductStoredProcedures.GetAll,
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<Product?> GetProductByIdAsync(int productId)
+    public async Task<Product?> GetByIdAsync(
+        int productId)
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection =
+            _connectionFactory.CreateConnection();
 
         return await connection.QueryFirstOrDefaultAsync<Product>(
-            StoredProcedures.GetProductById,
+            ProductStoredProcedures.GetById,
             new
             {
                 ProductId = productId
@@ -38,42 +42,95 @@ public class ProductRepository : IProductRepository
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> InsertProductAsync(Product product)
+    public async Task<IEnumerable<Product>> GetByOwnerAsync(
+        int ownerUserId)
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection =
+            _connectionFactory.CreateConnection();
 
-        return await connection.ExecuteScalarAsync<int>(
-            StoredProcedures.InsertProduct,
+        return await connection.QueryAsync<Product>(
+            ProductStoredProcedures.GetByOwner,
             new
             {
-                ProductName= product.Name,
-                Price=product.Price,
-                CategoryId = product.CategoryId
+                OwnerUserId = ownerUserId
             },
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> UpdateProductAsync(Product product)
+    public async Task<int> AddAsync(
+        Product product,
+        int ownerUserId)
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection =
+            _connectionFactory.CreateConnection();
 
-        return await connection.ExecuteAsync(
-            StoredProcedures.UpdateProduct,
+        return await connection.ExecuteScalarAsync<int>(
+            ProductStoredProcedures.Insert,
+            new
+            {
+                ProductName = product.Name,
+                Price = product.Price,
+                CategoryId = product.CategoryId,
+                Description = product.Description,
+                StockQuantity = product.StockQuantity,
+                OwnerUserId = ownerUserId
+            },
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<int> UpdateAsync(
+        Product product,
+        int currentUserId,
+        bool isSuperAdmin)
+    {
+        using var connection =
+            _connectionFactory.CreateConnection();
+
+        return await connection.ExecuteScalarAsync<int>(
+            ProductStoredProcedures.Update,
             new
             {
                 ProductId = product.Id,
                 ProductName = product.Name,
-                product.Price
+                Price = product.Price,
+                CategoryId = product.CategoryId,
+                Description = product.Description,
+                StockQuantity = product.StockQuantity,
+                CurrentUserId = currentUserId,
+                IsSuperAdmin = isSuperAdmin
             },
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<int> DeleteProductAsync(int productId)
+    public async Task<int> UpdateProductImageAsync(
+        int productId,
+        string imageUrl,
+        int currentUserId,
+        bool isSuperAdmin)
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection =
+            _connectionFactory.CreateConnection();
 
-        return await connection.ExecuteAsync(
-            StoredProcedures.DeleteProduct,
+        return await connection.ExecuteScalarAsync<int>(
+            ProductStoredProcedures.UpdateImage,
+            new
+            {
+                ProductId = productId,
+                ImageUrl = imageUrl,
+                CurrentUserId = currentUserId,
+                IsSuperAdmin = isSuperAdmin
+            },
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<int> DeleteAsync(
+        int productId)
+    {
+        using var connection =
+            _connectionFactory.CreateConnection();
+
+        return await connection.ExecuteScalarAsync<int>(
+            ProductStoredProcedures.Delete,
             new
             {
                 ProductId = productId

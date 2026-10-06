@@ -10,6 +10,8 @@ namespace SimpleCRUDAPI.Mapping
         {
             CreateMap<Product,ProductResponseDto>();
             CreateMap<ProductRequestDto,Product>();
+
+
             
         }
     }

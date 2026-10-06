@@ -9,6 +9,7 @@
         public const string InsertProduct = "Catalog.usp_InsertProduct";
 
         public const string UpdateProduct = "Catalog.usp_UpdateProduct";
+        public const string UpdateProductImage ="Catalog.usp_UpdateProductImage";
 
         public const string DeleteProduct = "Catalog.usp_DeleteProduct";
 
