@@ -77,38 +77,94 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
+    public async Task<LoginResponseDto> LoginAsync(
+     LoginRequestDto request)
     {
-        var user = await _authRepository.GetUserByEmailAsync(request.Email);
+        var user =
+            await _authRepository
+                .GetUserByEmailAsync(
+                    request.Email
+                );
 
         if (user == null)
+        {
             throw new InvalidCredentialsException();
+        }
 
-        var isValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
+
+        var isValid =
+            _passwordHasher.VerifyPassword(
+                request.Password,
+                user.PasswordHash
+            );
 
         if (!isValid)
-            throw new InvalidCredentialsException();
-
-        var jwt = _jwtTokenService.GenerateToken(user);
-
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
-
-        await _authRepository.SaveRefreshTokenAsync(new RefreshToken
         {
-            UserId = user.UserId,
-            Token = refreshToken,
-            ExpiryDate = DateTime.UtcNow.AddDays(7)
-        });
+            throw new InvalidCredentialsException();
+        }
+
+
+        // Make sure user has a role
+        if (string.IsNullOrWhiteSpace(user.RoleName))
+        {
+            throw new UserRoleNotAssignedException();
+        }
+
+
+        var jwt =
+            _jwtTokenService.GenerateToken(
+                user
+            );
+
+
+        var refreshToken =
+            _jwtTokenService
+                .GenerateRefreshToken();
+
+
+        await _authRepository
+            .SaveRefreshTokenAsync(
+                new RefreshToken
+                {
+                    UserId =
+                        user.UserId,
+
+                    Token =
+                        refreshToken,
+
+                    ExpiryDate =
+                        DateTime.UtcNow
+                            .AddDays(7)
+                }
+            );
+
 
         return new LoginResponseDto
         {
-            UserId = user.UserId,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Token = jwt.Token,
-            RefreshToken = refreshToken,
-            Expiration = jwt.Expiration
+            UserId =
+                user.UserId,
+
+            FirstName =
+                user.FirstName,
+
+            LastName =
+                user.LastName,
+
+            Email =
+                user.Email,
+
+            // IMPORTANT
+            RoleName =
+                user.RoleName,
+
+            Token =
+                jwt.Token,
+
+            RefreshToken =
+                refreshToken,
+
+            Expiration =
+                jwt.Expiration
         };
     }
 

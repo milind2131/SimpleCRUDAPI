@@ -23,6 +23,6 @@
         public DateTime CreatedDate { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
-        public string RoleName { get; set; } = string.Empty;
+        public string? RoleName { get; set; } = string.Empty;
     }
 }

@@ -1,12 +1,13 @@
 ﻿using Ecommerce.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Mvc;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Ecommerce.Application.Service;
 using SimpleCRUDAPI.Ecommerce.Application.Services;
 using SimpleCRUDAPI.Ecommerce.Application.Validators;
 using SimpleCRUDAPI.Ecommerce.Infrastructure.Data;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Repositories;
+using SimpleCRUDAPI.Ecommerce.Infrastructure.Repository;
 using SimpleCRUDAPI.Ecommerce.Infrastructure.Security;
 using SimpleCRUDAPI.Ecommerce.Infrastructure.Services;
 using SimpleCRUDAPI.Mapping;
@@ -24,6 +25,10 @@ public static class ServiceCollectionExtension
 
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IProductService, ProductService>();
+
+        services.AddScoped<IRoleUpgradeRequestRepository,RoleUpgradeRequestRepository>();
+
+        services.AddScoped<IRoleUpgradeRequestService,RoleUpgradeRequestService>();
 
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IAuthService, AuthService>();

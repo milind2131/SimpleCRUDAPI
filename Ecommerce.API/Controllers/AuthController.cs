@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace SimpleCRUDAPI.Controllers;
 
-[AllowAnonymous]
+//[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
 
@@ -58,6 +58,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequestDto request)
     {
@@ -99,6 +100,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
     {
@@ -107,6 +109,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost("logout-all")]
     public async Task<IActionResult> LogoutFromAllDevices()
     {

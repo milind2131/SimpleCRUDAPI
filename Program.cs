@@ -79,6 +79,7 @@ try
     app.UseMiddleware<ExceptionMiddleware>();
 
     app.UseHttpsRedirection();
+    app.UseStaticFiles();
 
     app.UseCors("ReactApp");
 

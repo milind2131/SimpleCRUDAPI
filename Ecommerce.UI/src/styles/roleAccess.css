@@ -1,0 +1,492 @@
+.role-access-page,
+.role-admin-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.role-access-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+  padding: 34px;
+  border-radius: 22px;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #5b4cf0,
+      #7c68f8
+    );
+  box-shadow:
+    0 18px 42px
+    rgba(91, 76, 240, 0.18);
+}
+
+.role-access-hero::after {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background:
+    rgba(255, 255, 255, 0.08);
+}
+
+.role-access-hero > span,
+.role-admin-header > div:first-child > span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.role-access-hero h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 850;
+}
+
+.role-access-hero p {
+  max-width: 650px;
+  margin: 0;
+  color:
+    rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.current-role-request {
+  display: grid;
+  grid-template-columns:
+    auto 1fr auto;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 22px;
+  padding: 17px;
+  border: 1px solid #e8ebf1;
+  border-radius: 15px;
+  background: #ffffff;
+}
+
+.current-request-icon {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 17px;
+}
+
+.status-pending
+.current-request-icon {
+  color: #b54708;
+  background: #fffaeb;
+}
+
+.status-approved
+.current-request-icon {
+  color: #067647;
+  background: #dcfae6;
+}
+
+.status-rejected
+.current-request-icon {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.current-request-content > span {
+  color: #98a2b3;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.current-request-content h4 {
+  margin: 3px 0;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.current-request-content p,
+.current-request-content small {
+  margin: 0;
+  color: #667085;
+  font-size: 9px;
+}
+
+.current-request-status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  color: #475467;
+  background: #f2f4f7;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.role-option-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.role-option-card {
+  padding: 25px;
+  border: 1px solid #e8ebf0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 30px
+    rgba(15, 23, 42, 0.045);
+}
+
+.role-card-icon {
+  width: 49px;
+  height: 49px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 17px;
+  border-radius: 14px;
+  font-size: 19px;
+}
+
+.seller-option
+.role-card-icon {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.admin-option
+.role-card-icon {
+  color: #5b4cf0;
+  background: #efedff;
+}
+
+.role-card-label {
+  color: #98a2b3;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.role-option-card h3 {
+  margin: 5px 0 8px;
+  color: #344054;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.role-option-card > p {
+  min-height: 45px;
+  color: #667085;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.role-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 13px;
+  background: #f8fafc;
+}
+
+.role-feature-list > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475467;
+  font-size: 10px;
+}
+
+.role-feature-list i {
+  color: #12b76a;
+}
+
+.role-option-card > button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 11px;
+  color: #ffffff;
+  background: #5b4cf0;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.seller-option > button {
+  background: #047857;
+}
+
+.role-option-card > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.role-access-note {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 13px 15px;
+  border: 1px solid #e7eaf0;
+  border-radius: 12px;
+  color: #667085;
+  background: #fbfcfe;
+}
+
+.role-access-note i {
+  color: #5b4cf0;
+}
+
+.role-access-note div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.role-access-note strong {
+  color: #475467;
+  font-size: 10px;
+}
+
+.role-access-note span {
+  font-size: 9px;
+}
+
+.role-admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.role-admin-header
+> div:first-child
+> span {
+  color: #5b4cf0;
+}
+
+.role-admin-header h2 {
+  margin: 0 0 5px;
+  color: #172033;
+  font-size: 28px;
+  font-weight: 850;
+}
+
+.role-admin-header p {
+  margin: 0;
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.pending-count-card {
+  min-width: 100px;
+  padding: 12px 18px;
+  border: 1px solid #e8ebf0;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.pending-count-card strong {
+  display: block;
+  color: #5b4cf0;
+  font-size: 22px;
+}
+
+.pending-count-card span {
+  color: #98a2b3;
+  font-size: 9px;
+}
+
+.role-request-table-card {
+  overflow: hidden;
+  border: 1px solid #e8ebf0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 10px 30px
+    rgba(15, 23, 42, 0.04);
+}
+
+.role-request-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.role-request-table th {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e8ebf0;
+  color: #667085;
+  background: #fafbfc;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.role-request-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #f0f2f5;
+  color: #475467;
+  font-size: 10px;
+  vertical-align: middle;
+}
+
+.request-user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.request-user > div {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: #5b4cf0;
+  background: #efedff;
+  font-weight: 800;
+}
+
+.requested-role-badge,
+.request-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 20px;
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.requested-role-badge.seller {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.requested-role-badge.admin {
+  color: #5b4cf0;
+  background: #efedff;
+}
+
+.request-pending-badge {
+  color: #b54708;
+  background: #fffaeb;
+}
+
+.request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.request-actions button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border-radius: 9px;
+  background: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.approve-request {
+  border: 1px solid #a6f4c5;
+  color: #067647;
+}
+
+.reject-request {
+  border: 1px solid #fecdca;
+  color: #b42318;
+}
+
+.role-empty-state,
+.role-page-loading {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 9px;
+  padding: 30px;
+  text-align: center;
+}
+
+.role-empty-state > div {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #067647;
+  background: #dcfae6;
+  font-size: 24px;
+}
+
+.role-empty-state h4 {
+  margin: 4px 0 0;
+  color: #344054;
+  font-size: 15px;
+}
+
+.role-empty-state p,
+.role-page-loading span {
+  margin: 0;
+  color: #98a2b3;
+  font-size: 10px;
+}
+
+@media (max-width: 800px) {
+  .role-option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pending-count-card {
+    display: none;
+  }
+}
+
+@media (max-width: 550px) {
+  .role-access-hero {
+    padding: 25px 20px;
+  }
+
+  .role-access-hero h1 {
+    font-size: 24px;
+  }
+
+  .current-role-request {
+    grid-template-columns:
+      auto 1fr;
+  }
+
+  .current-request-status {
+    display: none;
+  }
+}

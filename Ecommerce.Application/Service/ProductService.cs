@@ -1,102 +1,182 @@
-﻿using AutoMapper;
-using SimpleCRUDAPI.DTO_s;
+﻿using SimpleCRUDAPI.DTO_s;
 using SimpleCRUDAPI.Ecommerce.Application.Interfaces;
 using SimpleCRUDAPI.Model;
 
-namespace SimpleCRUDAPI.Ecommerce.Application.Service
+namespace SimpleCRUDAPI.Ecommerce.Application.Service;
+
+public class ProductService : IProductService
 {
-    public class ProductService : IProductService
+    private readonly IProductRepository _productRepository;
+
+    public ProductService(
+        IProductRepository productRepository)
     {
+        _productRepository = productRepository;
+    }
 
-        private readonly IProductRepository _productRepository;
-        private readonly IMapper _mapper;
-        public ProductService(IProductRepository productRepository, IMapper mapper)
+    public async Task<IEnumerable<ProductResponseDto>>
+        GetAllProductsAsync()
+    {
+        var products =
+            await _productRepository.GetAllAsync();
+
+        return products.Select(MapToResponse);
+    }
+
+    public async Task<ProductResponseDto?>
+        GetProductByIdAsync(
+            int productId)
+    {
+        var product =
+            await _productRepository.GetByIdAsync(
+                productId);
+
+        if (product == null)
         {
-            _productRepository = productRepository;
-            _mapper = mapper;
+            return null;
         }
 
-        //public Task<List<Product>> GetAll()
-        //{
-        //    return _productRepository.GetAll();
-        //}
+        return MapToResponse(product);
+    }
 
-        // 1. Why we are using async over here without dto  working fine
-        // 2. So much repeated code for object conversion any solution for that?
+    public async Task<IEnumerable<ProductResponseDto>>
+        GetMyProductsAsync(
+            int userId)
+    {
+        var products =
+            await _productRepository.GetByOwnerAsync(
+                userId);
 
+        return products.Select(MapToResponse);
+    }
 
-        /* Without using Automapper code */
-
-        //public async Task<List<ProductResponseDto>> GetAll()  
-        //{
-        //    var products = await _productRepository.GetAll();
-
-        //    return products.Select(p => new ProductResponseDto
-        //    {
-        //        Id = p.Id,
-        //        Name = p.Name,
-        //        Price = p.Price,
-        //        Category = p.Category
-        //    }).ToList();
-        //}
-
-        /* With using Automapper code */
-        public async Task<List<ProductResponseDto>> GetAll()
+    public async Task<ProductResponseDto?>
+        AddProductAsync(
+            ProductRequestDto request,
+            int ownerUserId)
+    {
+        var product = new Product
         {
-            var products = await _productRepository.GetAllProductsAsync();
+            Name = request.Name.Trim(),
+            Price = request.Price,
+            CategoryId = request.CategoryId,
+            Description = request.Description?.Trim(),
+            StockQuantity = request.StockQuantity
+        };
 
-            return _mapper.Map<List<ProductResponseDto>>(products);
-            //throw new Exception("Testing database logging");
-            //throw new Exception("This is a test exception from Service.");
+        var productId =
+            await _productRepository.AddAsync(
+                product,
+                ownerUserId);
+
+        if (productId <= 0)
+        {
+            return null;
         }
 
-        public async Task<ProductResponseDto?> GetById(int id)
+        var createdProduct =
+            await _productRepository.GetByIdAsync(
+                productId);
+
+        if (createdProduct == null)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
-
-            if (product == null)
-                return null;
-
-            return _mapper.Map<ProductResponseDto>(product);
+            return null;
         }
 
-        public async Task<ProductResponseDto> Add(ProductRequestDto request)
+        return MapToResponse(createdProduct);
+    }
+
+    public async Task<bool>
+        UpdateProductAsync(
+            int productId,
+            ProductRequestDto request,
+            int currentUserId,
+            bool isSuperAdmin)
+    {
+        var product = new Product
         {
-            var product = _mapper.Map<Product>(request);
+            Id = productId,
+            Name = request.Name.Trim(),
+            Price = request.Price,
+            CategoryId = request.CategoryId,
+            Description = request.Description?.Trim(),
+            StockQuantity = request.StockQuantity
+        };
 
-            var productId =
-       await _productRepository.InsertProductAsync(product);
+        var affectedRows =
+            await _productRepository.UpdateAsync(
+                product,
+                currentUserId,
+                isSuperAdmin);
 
-            var createdProduct =
-                await _productRepository.GetProductByIdAsync(productId);
+        return affectedRows > 0;
+    }
 
-            if (createdProduct == null)
-                throw new InvalidOperationException(
-                    "Product was created but could not be retrieved.");
+    public async Task<bool>
+        UpdateProductImageAsync(
+            int productId,
+            string imageUrl,
+            int currentUserId,
+            bool isSuperAdmin)
+    {
+        var affectedRows =
+            await _productRepository.UpdateProductImageAsync(
+                productId,
+                imageUrl,
+                currentUserId,
+                isSuperAdmin);
 
-            return _mapper.Map<ProductResponseDto>(createdProduct);
+        return affectedRows > 0;
+    }
+
+    public async Task<bool>
+        CanModifyProductAsync(
+            int productId,
+            int currentUserId,
+            bool isSuperAdmin)
+    {
+        if (isSuperAdmin)
+        {
+            return true;
         }
 
-        public async Task<ProductResponseDto?> Update(int id, ProductRequestDto request)
+        var product =
+            await _productRepository.GetByIdAsync(
+                productId);
+
+        if (product == null)
         {
-            var product = _mapper.Map<Product>(request);
-
-            product.Id = id;
-
-            var updated = await _productRepository.UpdateProductAsync(product);
-
-            if (updated == null)
-                return null;
-
-            var updatedProduct = await _productRepository.GetProductByIdAsync(product.Id);
-
-            return _mapper.Map<ProductResponseDto>(updatedProduct);
+            return false;
         }
 
-        public  Task<int> Delete(int id)
-        {
-            return   _productRepository.DeleteProductAsync(id);
-        }
+        return product.OwnerUserId ==
+               currentUserId;
+    }
 
+    public async Task<bool>
+        DeleteProductAsync(
+            int productId)
+    {
+        var affectedRows =
+            await _productRepository.DeleteAsync(
+                productId);
+
+        return affectedRows > 0;
+    }
+
+    private static ProductResponseDto MapToResponse(
+        Product product)
+    {
+        return new ProductResponseDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            CategoryId = product.CategoryId,
+            Category = product.Category,
+            Description = product.Description,
+            StockQuantity = product.StockQuantity,
+            ImageUrl = product.ImageUrl
+        };
     }
 }

@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Ecommerce.Application\Interfaces\Application\" />
     <Folder Include="Ecommerce.Shared\" />
+    <Folder Include="wwwroot\uploads\products\" />
   </ItemGroup>
 
   <ItemGroup>
